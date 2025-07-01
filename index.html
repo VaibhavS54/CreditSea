@@ -3,213 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextGen Loan Flow Monitoring</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>FinFlow Central</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
-            color: #334155;
-        }
-        .bg-indigo-800 {
-            background-color: #4a0070;
-        }
-        .bg-indigo-700 {
-            background-color: #6a0dad;
-        }
-        .hover\:bg-indigo-800:hover {
-            background-color: #4a0070;
-        }
-        .text-indigo-600 {
-            color: #8a2be2;
-        }
-        .hover\:text-indigo-900:hover {
-            color: #5d00a8;
-        }
-        .ring-indigo-500 {
-            border-color: #8a2be2;
-        }
-        .connection-status-animate {
-            animation: pulse 1.5s infinite;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .connection-status-animate { animation: pulse 2s infinite; }
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
         }
-        .card {
-            background-color: #ffffff;
-            border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-        th, td {
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .error-row:last-child td {
-            border-bottom: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <header class="bg-indigo-800 text-white p-4 shadow-md flex justify-between items-center">
-        <h1 class="text-2xl font-bold">Loan Flow Monitoring Dashboard</h1>
-        <div id="connection-status" class="flex items-center space-x-2">
-            <div class="connection-status-animate w-3 h-3 rounded-full bg-green-500"></div>
-            <span>Connected</span>
+<body class="bg-gray-900 text-gray-100 flex h-screen overflow-hidden">
+    <aside class="w-64 bg-gray-800 text-white shadow-lg flex flex-col p-6">
+        <div class="flex items-center gap-3 mb-10">
+            <img src="https://placehold.co/40x40/374151/F9FAFB" alt="Logo" class="rounded-full">
+            <h1 class="text-2xl font-bold tracking-wide">FinFlow Central</h1>
         </div>
-    </header>
+        <nav class="flex-1 space-y-4">
+            <a href="#dashboard" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-200 hover:bg-gray-700 transition duration-200 ease-in-out active:bg-purple-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="#error-logs" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-200 hover:bg-gray-700 transition duration-200 ease-in-out active:bg-purple-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Error Logs</span>
+            </a>
+            <a href="#processing-controls" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-200 hover:bg-gray-700 transition duration-200 ease-in-out active:bg-purple-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.573.351 1.25-.102 1.065-2.572z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                <span>Controls</span>
+            </a>
+        </nav>
+    </aside>
 
-    <main class="flex-1 p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <section class="md:col-span-1 space-y-6">
-            <div class="card p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">System Metrics</h2>
-                <div class="grid grid-cols-2 gap-4 text-lg">
-                    <div>
-                        <div class="font-medium">Incoming Loans:</div>
-                        <span id="incoming-rate" class="text-gray-900 font-bold text-2xl">0</span> <span class="text-gray-500 text-sm mb-1">/sec</span>
-                    </div>
-                    <div>
-                        <div class="font-medium">Processed Loans:</div>
-                        <span id="processed-rate" class="text-gray-900 font-bold text-2xl">0</span> <span class="text-gray-500 text-sm mb-1">/sec</span>
-                    </div>
-                    <div>
-                        <div class="font-medium">Error Rate:</div>
-                        <span id="error-rate" class="text-red-600 font-bold text-2xl">0.0%</span> <span class="text-gray-500 text-sm mb-1">Healthy</span>
-                    </div>
-                    <div>
-                        <div class="font-medium">Avg. Latency:</div>
-                        <span id="avg-latency" class="text-blue-600 font-bold text-2xl">0ms</span> <span class="text-gray-500 text-sm mb-1">Optimal</span>
-                    </div>
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <header class="bg-gray-800 text-white shadow-lg py-4 px-6 flex justify-end items-center">
+            <div class="flex items-center gap-5">
+                <div id="connection-status" class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full connection-status-animate"></div>
+                    <span class="text-sm">Connected</span>
                 </div>
+                <button id="pause-btn" class="bg-gray-700 text-gray-200 font-semibold px-4 py-2 rounded-lg shadow hover:bg-gray-600 transition">
+                    Pause Processing
+                </button>
             </div>
+        </header>
 
-            <div class="card p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">System Controls</h2>
-                <button id="pause-btn" class="w-full bg-indigo-700 text-white py-3 rounded-md hover:bg-indigo-800 transition-colors font-medium text-lg shadow-sm">Pause Processing</button>
-                
-                <div class="mt-4">
-                    <label for="batch-size" class="block text-sm font-medium text-gray-700 mb-2">Retry Batch Size:</label>
-                    <select id="batch-size" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
-                        <option value="10">10 Errors</option>
-                        <option value="50">50 Errors</option>
-                        <option value="100" selected>100 Errors</option>
-                        <option value="500">500 Errors</option>
-                    </select>
-                </div>
-
-                <div class="mt-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Retry Strategy:</label>
-                    <div class="mt-1 space-y-2">
-                        <div class="flex items-center">
-                            <input id="strategy-immediate" name="retry-strategy" type="radio" value="immediate" checked class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
-                            <label for="strategy-immediate" class="ml-2 block text-sm text-gray-900">Immediate</label>
+        <main class="flex-1 overflow-y-auto container mx-auto px-6 py-8 space-y-10">
+            <section id="dashboard" class="min-h-full">
+                <h2 class="text-3xl font-bold mb-8">Dashboard Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-400 font-medium">Incoming Loans</span>
+                            <span class="text-xs bg-purple-900 text-purple-300 px-2 py-0.5 rounded-full">Live</span>
                         </div>
-                        <div class="flex items-center">
-                            <input id="strategy-exponential" name="retry-strategy" type="radio" value="exponential" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
-                            <label for="strategy-exponential" class="ml-2 block text-sm text-gray-900">Exponential Backoff</label>
-                        </div>
-                        <div class="flex items-center">
-                            <input id="strategy-deadletter" name="retry-strategy" type="radio" value="deadletter" class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300">
-                            <label for="strategy-deadletter" class="ml-2 block text-sm text-gray-900">Dead-letter Queue</label>
+                        <div class="flex items-end gap-2">
+                            <span id="incoming-rate" class="text-3xl font-bold">0</span>
+                            <span class="text-green-400 text-sm mb-1">+0/sec</span>
                         </div>
                     </div>
-                </div>
-
-                <button id="retry-failed" class="mt-6 w-full bg-red-600 text-white py-3 rounded-md hover:bg-red-700 transition-colors font-medium text-lg shadow-sm">Retry Failed Batches</button>
-            </div>
-        </section>
-
-        <section class="md:col-span-2 space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="card p-6">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Loan Processing Rates</h2>
-                    <canvas id="rateChart"></canvas>
-                </div>
-                <div class="card p-6">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Error Distribution</h2>
-                    <canvas id="errorChart"></canvas>
-                </div>
-            </div>
-
-            <div class="card p-6">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">Error Logs</h2>
-                
-                <div class="flex flex-wrap items-center gap-4 mb-4">
-                    <input type="text" id="search-input" placeholder="Search by ID, Applicant, Details..." class="flex-1 min-w-[200px] border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                    
-                    <select id="error-type-filter" class="border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="">All Types</option>
-                        <option value="validation">Validation</option>
-                        <option value="api">API</option>
-                        <option value="timeout">Timeout</option>
-                        <option value="database">Database</option>
-                    </select>
-
-                    <select id="timeframe-filter" class="border border-gray-300 rounded-md shadow-sm p-2 focus:ring-indigo-500 focus:border-indigo-500">
-                        <option value="5m">Last 5 Minutes</option>
-                        <option value="15m">Last 15 Minutes</option>
-                        <option value="1h">Last 1 Hour</option>
-                        <option value="24h">Last 24 Hours</option>
-                        <option value="">All Time</option>
-                    </select>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
-                                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="error-logs-body" class="bg-white divide-y divide-gray-200">
-                        </tbody>
-                    </table>
-                </div>
-
-                <nav class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                    <div class="flex-1 flex justify-between sm:hidden">
-                        <button id="prev-page" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</button>
-                        <button id="next-page" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</button>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-400 font-medium">Processed Loans</span>
+                            <span class="text-xs bg-purple-900 text-purple-300 px-2 py-0.5 rounded-full">Live</span>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <span id="processed-rate" class="text-3xl font-bold">0</span>
+                            <span class="text-green-400 text-sm mb-1">+0/sec</span>
+                        </div>
                     </div>
-                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-400 font-medium">Error Rate</span>
+                            <span class="text-xs bg-purple-900 text-purple-300 px-2 py-0.5 rounded-full">Live</span>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <span id="error-rate" class="text-3xl font-bold">0%</span>
+                            <span class="text-red-400 text-sm mb-1">0 in last min</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-400 font-medium">Avg Latency</span>
+                            <span class="text-xs bg-purple-900 text-purple-300 px-2 py-0.5 rounded-full">Live</span>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <span id="avg-latency" class="text-3xl font-bold">0ms</span>
+                            <span class="text-green-400 text-sm mb-1">within SLA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-semibold mb-4">Incoming vs Processed</h3>
+                        <canvas id="rateChart" height="240"></canvas>
+                    </div>
+                    <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                        <h3 class="text-lg font-semibold mb-4">Error Distribution</h3>
+                        <canvas id="errorChart" height="240"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section id="error-logs" class="min-h-full">
+                <h2 class="text-3xl font-bold mb-8">Error Logs</h2>
+                <div class="bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b border-gray-700">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <input type="text" id="search-input" class="flex-1 border border-gray-600 bg-gray-700 text-gray-100 rounded-md px-4 py-2 focus:ring-2 focus:ring-purple-500" placeholder="Search errors...">
+                            <select id="error-type-filter" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-md px-4 py-2">
+                                <option value="">All Types</option>
+                                <option value="validation">Validation</option>
+                                <option value="api">API</option>
+                                <option value="timeout">Timeout</option>
+                                <option value="database">Database</option>
+                            </select>
+                            <select id="timeframe-filter" class="border border-gray-600 bg-gray-700 text-gray-100 rounded-md px-4 py-2">
+                                <option value="5m">5 min</option>
+                                <option value="15m">15 min</option>
+                                <option value="1h">1 hour</option>
+                                <option value="24h">24 hours</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm divide-y divide-gray-700">
+                            <thead class="bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-300">Timestamp</th>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-300">App ID</th>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-300">Applicant</th>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-300">Type</th>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-300">Details</th>
+                                    <th class="px-6 py-3 text-right font-medium text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="error-logs-body" class="bg-gray-800 divide-y divide-gray-700"></tbody>
+                        </table>
+                    </div>
+                    <div class="flex justify-between items-center px-6 py-4 border-t border-gray-700 text-sm">
+                        <span>Showing <span id="current-count">0</span> of <span id="total-count">0</span></span>
+                        <div class="flex gap-2">
+                            <button id="prev-page" class="px-3 py-1 rounded border border-gray-600 bg-gray-700 text-gray-200 disabled:opacity-50">Prev</button>
+                            <button id="next-page" class="px-3 py-1 rounded border border-gray-600 bg-gray-700 text-gray-200 disabled:opacity-50">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="processing-controls" class="min-h-full">
+                <h2 class="text-3xl font-bold mb-8">Processing Controls</h2>
+                <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <p class="text-sm text-gray-700">
-                                Showing
-                                <span id="current-count" class="font-medium">1-10</span>
-                                of
-                                <span id="total-count" class="font-medium">0</span>
-                                results
-                            </p>
+                            <label class="text-sm font-medium text-gray-300 block mb-2">Retry Strategy</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="retry-strategy" value="immediate" checked class="h-4 w-4 text-purple-600">
+                                    <span class="ml-2">Immediate</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="retry-strategy" value="backoff" class="h-4 w-4 text-purple-600">
+                                    <span class="ml-2">Backoff</span>
+                                </label>
+                            </div>
                         </div>
                         <div>
-                            <nav class="relative z-0 inline-flex shadow-sm -space-x-px" aria-label="Pagination">
-                                <button id="prev-page" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Previous</span>
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                                <button id="next-page" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
-                                    <span class="sr-only">Next</span>
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </nav>
+                            <label class="text-sm font-medium text-gray-300 block mb-2">Batch Size</label>
+                            <select id="batch-size" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-gray-100 rounded-md mb-4">
+                                <option value="50">50</option>
+                                <option value="100" selected>100</option>
+                                <option value="200">200</option>
+                                <option value="500">500</option>
+                            </select>
+                            <button id="retry-failed" class="bg-purple-600 text-white px-4 py-2 rounded-md shadow hover:bg-purple-700 transition w-full">Retry Failed</button>
                         </div>
                     </div>
-                </nav>
-            </div>
-        </section>
-    </main>
-
-    <script type="module" src="script.js"></script>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/Script.js"></script>
 </body>
 </html>

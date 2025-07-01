@@ -1,5 +1,7 @@
-document.addEventListener('DOMContentLoaded', () => {
+// Simulated Loan Processing System - TypeScript Version
 
+document.addEventListener('DOMContentLoaded', () => {
+  // Define types
   type ErrorType = 'validation' | 'api' | 'timeout' | 'database';
   type RetryStatus = 'open' | 'retrying' | 'retry-success' | 'retry-failed';
 
@@ -55,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     errorChartCtx: CanvasRenderingContext2D;
   }
 
+  // Convert existing JS to use above types
   const state: State = {
     processing: true,
     connection: true,
@@ -98,4 +101,5 @@ document.addEventListener('DOMContentLoaded', () => {
     rateChart: null,
     errorChart: null
   };
+
 });
